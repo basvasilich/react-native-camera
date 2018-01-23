@@ -285,6 +285,7 @@ public class RCTCameraModule extends ReactContextBaseJavaModule
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
+
         // Adjust for orientation.
         mMediaRecorder.setOrientationHint(RCTCamera.getInstance().getAdjustedDeviceOrientation());
 
@@ -317,6 +318,18 @@ public class RCTCameraModule extends ReactContextBaseJavaModule
         if (options.hasKey("totalSeconds")) {
             int totalSeconds = options.getInt("totalSeconds");
             mMediaRecorder.setMaxDuration(totalSeconds * 1000);
+        }
+
+        // Adjust Video Bitrate
+        if (options.hasKey("videoBitrate")) {
+            int videoBitrate = options.getInt("videoBitrate");
+            mMediaRecorder.setVideoEncodingBitRate(videoBitrate);
+        }
+
+        // Adjust Audio Bitrate
+        if (options.hasKey("audioBitrate")) {
+            int audioBitrate = options.getInt("audioBitrate");
+            mMediaRecorder.setAudioEncodingBitRate(audioBitrate);
         }
 
         if (options.hasKey("maxFileSize")) {
