@@ -1,13 +1,53 @@
-
 # React Native Camera [![Backers on Open Collective](https://opencollective.com/react-native-camera/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/react-native-camera/sponsors/badge.svg)](#sponsors) [![npm version](https://badge.fury.io/js/react-native-camera.svg)](http://badge.fury.io/js/react-native-camera) [![Gitter](https://badges.gitter.im/lwansbrough/react-native-camera.svg)](https://gitter.im/lwansbrough/react-native-camera)
 
 The comprehensive camera module for React Native. Including photographs, videos, and barcode scanning!
+
+### Experimental
+RNCamera (Android/Ios) and FaceDetector(Android only) module  based on Expo camera module (https://docs.expo.io/versions/latest/sdk/camera.html)
+
+You can test and use this from `master` like this:
+
+`import { RNCamera, FaceDetector } from 'react-native-camera';`
+
+#### How to use master branch?
+Inside your package.json, use this
+`"react-native-camera": "git+https://git@github.com/react-native-community/react-native-camera"`
+instead of `"react-native-camera": "^0.12.0"`.
+
+#### Package change
+
+We are getting close to the 1.0 release and changed the package name's from RCTCamera to RNCamera, if you are using master branch, your app will not compile right away.
+
+Steps to adapt:
+
+### iOS
+
+Open your app's XCode project. Expand the Libraries folder in the project navigation and right click and delete the RCTCamera.xcodeproj.
+
+On your project's target, on `Build Phases`, click on libRCTCamera.a and delete (press the - button below).
+
+You can follow the instalation steps for RNCamera on the readme to link the new RNCamera project to your app's XCode project.
+
+You can do it via `react-native link` command or by the manual steps.
+
+Before building and running again, do a complete clean on your project.
+
+
+### Android
+
+1. On the MainApplication of your Android project change the import of RCTCameraPackage line to:
+```
+import org.reactnative.camera.RNCameraPackage;
+```
+
+2. Inside the getPackages() methods change `new RCTCameraPackage()` to `new RNCameraPackage()`.
 
 ### Contributing
 - Pull Requests are welcome, if you open a pull request we will do our best to get to it in a timely manner
 - Pull Request Reviews and even more welcome! we need help testing, reviewing, and updating open PRs
 - If you are interested in contributing more actively, please contact me (same username on Twitter, Facebook, etc.) Thanks!
-- We are now on [Open Collective](https://opencollective.com/react-native-camera#sponsor)! Contributions are appreciated and will be used to fund core contributors. [more details](#open-collective) 
+- We are now on [Open Collective](https://opencollective.com/react-native-camera#sponsor)! Contributions are appreciated and will be used to fund core contributors. [more details](#open-collective)
+- If you want to help us coding, join Expo slack https://slack.expo.io/, so we can chat over there. (#react-native-camera)
 
 #### Breaking Changes
 ##### android build tools has been bumped to 25.0.2, please update (can be done via android cli or AndroidStudio)
@@ -16,6 +56,10 @@ The comprehensive camera module for React Native. Including photographs, videos,
 - if on react-native >= 0.40 `npm i react-native-camera@0.6`
 
 ##### Permissions
+To use the camera on Android you must ask for camera permission:
+```java
+  <uses-permission android:name="android.permission.CAMERA" />
+```
 To enable `video recording` feature you have to add the following code to the `AndroidManifest.xml`:
 ```java
   <uses-permission android:name="android.permission.RECORD_AUDIO"/>
@@ -30,7 +74,7 @@ To enable `video recording` feature you have to add the following code to the `A
 
 ### Requirements
 1. JDK >= 1.7 (if you run on 1.6 you will get an error on "_cameras = new HashMap<>();")
-2. With iOS 10 and higher you need to add the "Privacy - Camera Usage Description" key to the info.plist of your project. This should be found in 'your_project/ios/your_project/Info.plist'. Add the following code:
+2. With iOS 10 and higher you need to add the "Privacy - Camera Usage Description" key to the Info.plist of your project. This should be found in 'your_project/ios/your_project/Info.plist'. Add the following code:
 ```
 <key>NSCameraUsageDescription</key>
 <string>Your message to user when the camera is accessed for the first time</string>
@@ -41,7 +85,7 @@ To enable `video recording` feature you have to add the following code to the `A
 
 <!-- Include this only if you are planning to use the microphone for video recording -->
 <key>NSMicrophoneUsageDescription</key>
-<string>Your message to user when the microsphone is accessed for the first time</string>
+<string>Your message to user when the microphone is accessed for the first time</string>
 ```
 3. On Android, you require `buildToolsVersion` of `25.0.2+`. _This should easily and automatically be downloaded by Android Studio's SDK Manager._
 
@@ -51,8 +95,6 @@ To enable `video recording` feature you have to add the following code to the `A
 <key>NSPhotoLibraryAddUsageDescription</key>
 <string>Your message to user when the photo library is accessed for the first time</string>
 ```
-
-NSPhotoLibraryAddUsageDescription
 
 ### Mostly automatic install with react-native
 1. `npm install react-native-camera --save`
@@ -75,6 +117,31 @@ pod 'react-native-camera', path: '../node_modules/react-native-camera'
 5. Click `RCTCamera.xcodeproj` in the project navigator and go the `Build Settings` tab. Make sure 'All' is toggled on (instead of 'Basic'). In the `Search Paths` section, look for `Header Search Paths` and make sure it contains both `$(SRCROOT)/../../react-native/React` and `$(SRCROOT)/../../../React` - mark both as `recursive`.
 5. Run your project (`Cmd+R`)
 
+
+### Post install steps
+#### iOS
+
+Face Detecion (available on RNCamera on master branch) is optional. If you want it, you are going to need to install GMV, as mentioned in the next section.
+
+If you do not need it, open your app xcode project, on the Project Navigator, expand the RCTCamera project, right click on the FaceDetector folder and delete it (move to trash, if you want). If you keep that folder and do not follow the GMV installation setps, your project will not compile.
+
+#### Installing GMV on iOS (master branch only)
+GMV (Google Mobile Vision) is used for Face detection by the iOS RNCamera. You have to link the google frameworks to your project to successfully compile the RCTCamera project.
+
+1. Download:
+Google Symbol Utilities: https://www.gstatic.com/cpdc/dbffca986f6337f8-GoogleSymbolUtilities-1.1.1.tar.gz
+Google Utilities: https://dl.google.com/dl/cpdc/978f81964b50a7c0/GoogleUtilities-1.3.2.tar.gz
+Google Mobile Vision: https://dl.google.com/dl/cpdc/df83c97cbca53eaf/GoogleMobileVision-1.1.0.tar.gz
+Google network Utilities: https://dl.google.com/dl/cpdc/54fd7b7ef8fd3edc/GoogleNetworkingUtilities-1.2.2.tar.gz
+Google Interchange Utilities: https://dl.google.com/dl/cpdc/1a7f7ba905b2c029/GoogleInterchangeUtilities-1.2.2.tar.gz
+
+2. Extract everything to one folder. Delete "BarcodeDetector" and "copy" folders from Google Mobile Vision.
+
+3. Open XCode, right click on your project and choose "New Group". Rename the new folder to "Frameworks". Right click on "Frameworks" and select "add files to 'YOUR_PROJECT'". Select all content from the folder of step 2, click on Options. Select "Copy items if needed", leave "Create groups" selected and choose all your targets on the "Add to targets" section. Then, click on "Add".
+
+4. On your target -> Build Phases -> Link Binary with Libraries -> add AddressBook.framework
+5. On your target -> Build Settings -> Other Linker Flags -> add -lz, -ObjC and -lc++
+6. To force indexing and prevent erros, restart xcode and reopen your project again before compiling.
 
 #### Android
 1. `npm install react-native-camera --save`
@@ -102,6 +169,15 @@ pod 'react-native-camera', path: '../node_modules/react-native-camera'
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   ```
 
+6. Add jitpack to android/build.gradle
+```gradle
+allprojects {
+    repositories {
+        maven { url "https://jitpack.io" }
+    }
+}
+```
+
 ## Usage
 
 All you need is to `require` the `react-native-camera` module and then use the
@@ -128,11 +204,19 @@ class BadInstagramCloneApp extends Component {
           ref={(cam) => {
             this.camera = cam;
           }}
+	  onBarCodeRead={this.onBarCodeRead.bind(this)}
           style={styles.preview}
           aspect={Camera.constants.Aspect.fill}>
           <Text style={styles.capture} onPress={this.takePicture.bind(this)}>[CAPTURE]</Text>
         </Camera>
       </View>
+    );
+  }
+
+  onBarCodeRead(e) {
+    console.log(
+        "Barcode Found!",
+        "Type: " + e.type + "\nData: " + e.data
     );
   }
 
@@ -176,7 +260,13 @@ Values: `Camera.constants.Aspect.fit` or `"fit"`, `Camera.constants.Aspect.fill`
 
 The `aspect` property allows you to define how your viewfinder renders the camera's view. For instance, if you have a square viewfinder and you want to fill it entirely, you have two options: `"fill"`, where the aspect ratio of the camera's view is preserved by cropping the view or `"stretch"`, where the aspect ratio is skewed in order to fit the entire image inside the viewfinder. The other option is `"fit"`, which ensures the camera's entire view fits inside your viewfinder without altering the aspect ratio.
 
-#### `iOS` `audio`
+#### `cropToPreview`
+
+Values: `true` or `false` (default)
+
+Will crop the captured image to match the content that is displayed in the preview view. Works on both `Android` and `iOS`. Will be ignored if `captureMode` is other then `Camera.constants.CaptureMode.still`.
+
+#### `iOS` `captureAudio`
 
 Values: `true` (Boolean), `false` (default)
 
@@ -202,8 +292,6 @@ Values: `Camera.constants.CaptureQuality.high` or `"high"` (default), `Camera.co
 This property allows you to specify the quality output of the captured image or video. By default the quality is set to high.
 
 When choosing more-specific quality settings (1080p, 720p, 480p), note that each platform and device supports different valid picture/video sizes, and actual resolution within each of these quality settings might differ. There should not be too much variance (if any) for iOS; 1080p should give 1920x1080, 720p should give 1280x720, and 480p should give 640x480 (note that iOS 480p therefore is NOT the typical 16:9 HD aspect ratio, and the typically-HD camera preview screen may differ greatly in aspect from what you actually record!!). For Android, expect more variance: on most Androids, 1080p *should* give 1920x1080 and 720p *should* give 1280x720; however, 480p will at "best" be 853x480 (16:9 HD aspect ratio), but falls back/down to 800x480, 720x480, or "worse", depending on what is closest-but-less-than 853x480 and available on the actual device. If your application requires knowledge of the precise resolution of the output image/video, you might consider manually determine the actual resolution itself after capture has completed (particularly for 480p on Android).
-
-Android also supports `Camera.constants.CaptureQuality.preview` or `"preview"` which matches the output image to the same one used in the preview
 
 #### `type`
 
@@ -239,7 +327,7 @@ The following barcode types can be recognised:
 - `code39`
 - `code39mod43`
 - `code93`
-- `ean13`
+- `ean13` (`iOS` converts `upca` barcodes to `ean13` by adding a leading 0)
 - `ean8`
 - `pdf417`
 - `qr`
@@ -253,6 +341,7 @@ The barcode type is provided in the `data` object.
 #### `barCodeTypes`
 
 An array of barcode types to search for. Defaults to all types listed above. No effect if `onBarCodeRead` is undefined.
+Example: `<Camera barCodeTypes={[Camera.constants.BarCodeType.qr]} />`
 
 #### `flashMode`
 
@@ -272,7 +361,7 @@ Values:
 
 Use the `torchMode` property to specify the camera torch mode.
 
-#### `iOS` `onFocusChanged: Event { nativeEvent: { touchPoint: { x, y } }`
+#### `onFocusChanged: Event { nativeEvent: { touchPoint: { x, y } }`
 
 iOS: Called when a touch focus gesture has been made.
 By default, `onFocusChanged` is not defined and tap-to-focus is disabled.
@@ -280,6 +369,15 @@ By default, `onFocusChanged` is not defined and tap-to-focus is disabled.
 Android: This callback is not yet implemented. However, Android will
 automatically do tap-to-focus if the device supports auto-focus; there is
 currently no way to manage this from javascript.
+
+To get autofocus/tap to focus functionalities working correctly in android
+make sure that the proper permissions are set in your `AndroidManifest.xml`:
+```java
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+```
+
+
 
 #### `iOS` `defaultOnFocusComponent`
 
@@ -302,6 +400,34 @@ from javascript.
 
 If set to `true`, the device will not sleep while the camera preview is visible. This mimics the behavior of the default camera app, which keeps the device awake while open.
 
+#### `Android` `clearWindowBackground`
+
+Values:
+`true`
+`false` (default)
+
+If you encounter performance issue while using a window background drawable (typically defined in theme to emulate splashscreen behavior), set this to true to automatically clear window background once camera is started.
+
+#### `Android` `permissionDialogTitle`
+
+Starting on android M individual permissions must be granted for certain services, the camera is one of them, you can use this to change the title of the dialog prompt requesting permissions.
+
+#### `Android` `permissionDialogMessage`
+
+Starting on android M individual permissions must be granted for certain services, the camera is one of them, you can use this to change the content of the dialog prompt requesting permissions.
+
+#### `notAuthorizedView`
+
+By default a `Camera not authorized` message will be displayed when access to the camera has been denied, if set displays the passed react element instead of the default one.
+
+#### `pendingAuthorizationView`
+
+By default a <ActivityIndicator> will be displayed while the component is waiting for the user to grant/deny access to the camera, if set displays the passed react element instead of the default one.
+
+#### `pendingAuthorizationView`
+
+
+
 #### `mirrorImage`
 
 If set to `true`, the image returned will be mirrored.
@@ -311,8 +437,8 @@ If set to `true`, the image returned will be mirrored.
 If set to `true`, the image returned will be rotated to the _right way up_.  WARNING: It uses a significant amount of memory and my cause your application to crash if the device cannot provide enough RAM to perform the rotation.
 
 (_If you find that you need to use this option because your images are incorrectly oriented by default,
-could please submit a PR and include the make model of the device.  We believe that it's not 
-required functionality any more and would like to remove it._) 
+could please submit a PR and include the make model of the device.  We believe that it's not
+required functionality any more and would like to remove it._)
 
 ## Component instance methods
 
@@ -339,8 +465,8 @@ The promise will be fulfilled with an object with some of the following properti
 
  - `data`: Returns a base64-encoded string with the capture data (only returned with the deprecated `Camera.constants.CaptureTarget.memory`)
  - `path`: Returns the path of the captured image or video file on disk
- - `width`: (currently iOS video only) returns the video file's frame width
- - `height`: (currently iOS video only) returns the video file's frame height
+ - `width`: (not yet implemented for Android video) returns the image or video file's frame width (taking image orientation into account)
+ - `height`: (not yet implemented for Android video) returns the image or video file's frame height (taking image orientation into account)
  - `duration`: (currently iOS video only) video file duration
  - `size`: (currently iOS video only) video file size (in bytes)
 
@@ -355,6 +481,14 @@ Returns whether or not the camera has flash capabilities.
 #### `stopCapture()`
 
 Ends the current capture session for video captures. Only applies when the current `captureMode` is `video`.
+
+#### `stopPreview()`
+
+Stops the camera preview from running, and natively will make the current capture session pause.
+
+#### `startPreview()`
+
+Starts the camera preview again if previously stopped.
 
 ## Component static methods
 
@@ -377,6 +511,66 @@ This component supports subviews, so if you wish to use the camera view as a bac
 
 To see more of the `react-native-camera` in action, you can check out the source in [Example](https://github.com/lwansbrough/react-native-camera/tree/master/Example) folder.
 
+## Q & A
+
+#### meta-data android 26
+```
+  AndroidManifest.xml:25:13-35 Error:
+       Attribute meta-data#android.support.VERSION@value value=(26.0.2) from [com.android.support:exifinterface:26.0.2] Android
+  Manifest.xml:25:13-35
+    is also present at [com.android.support:support-v4:26.0.1] AndroidManifest.xml:28:13-35 value=(26.0.1).
+          Suggestion: add 'tools:replace="android:value"' to <meta-data> element at AndroidManifest.xml:23:9-25:38 to override.
+```
+
+Add this to your AndroidManifest.xml:
+
+- [ ]           xmlns:tools="http://schemas.android.com/tools"
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+```
+- [ ] tools:node="replace"
+```xml
+<application
+      android:name=".MainApplication"
+      android:allowBackup="true"
+      android:label="@string/app_name"
+      android:icon="@mipmap/ic_launcher"
+      android:theme="@style/AppTheme"
+      tools:node="replace"
+    >
+```
+
+#### When I try to build my project, I get following error:
+```
+Execution failed for task ':app:processDebugManifest'.
+> Manifest merger failed : Attribute meta-data#android.support.VERSION@value value=(26.0.2) from [com.android.support:exifinterface:26.0.2] AndroidManifest.xml:25:13-35
+        is also present at [com.android.support:support-v4:26.0.1] AndroidManifest.xml:28:13-35 value=(26.0.1).
+        Suggestion: add 'tools:replace="android:value"' to <meta-data> element at AndroidManifest.xml:23:9-25:38 to override.
+```
+#### As the error message hints `com.android.support:exifinterface:26.0.2` is already found in `com.android.support:support-v4:26.0.1`
+To fix this issue, modify your project's `android/app/build.gradle` as follows:
+```Gradle
+dependencies {
+    compile (project(':react-native-camera')) {
+        exclude group: "com.android.support"
+
+        // uncomment this if also com.google.android.gms:play-services-vision versions are conflicting
+        // this can happen if you use react-native-firebase
+        // exclude group: "com.google.android.gms"
+    }
+
+    compile ('com.android.support:exifinterface:26.0.1') {
+        force = true;
+    }
+
+    // uncomment this if you uncommented the previous line
+    // compile ('com.google.android.gms:play-services-vision:11.6.0') {
+    //    force = true;
+    // }
+}
+```
 
 ## Open Collective
 We are just beginning a funding campaign for react-native-camera. Contributions are greatly appreciated. When we gain more than $250 we will begin distributing funds to core maintainers in a fully transparent manner. Feedback for this process is welcomed, we will continue to evolve the strategy as we grow and learn more.
